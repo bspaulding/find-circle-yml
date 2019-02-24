@@ -3,11 +3,14 @@
 module FindCircleYml
   module GitHub
     class Configuration
-      ENVIRONMENT_VARIABLES = %w[
+      REQUIRED_ENVIRONMENT_VARIABLES = %w[
         GITHUB_USER
         GITHUB_ACCESS_TOKEN
-        GITHUB_ORGANIZATION
       ].freeze
+
+      ENVIRONMENT_VARIABLES = %w[
+        GITHUB_ORGANIZATION
+      ].concat(REQUIRED_ENVIRONMENT_VARIABLES).freeze
 
       attr_reader :environment
 
@@ -33,14 +36,14 @@ module FindCircleYml
         GitHub::Service.new(
           environment.fetch('GITHUB_USER'),
           environment.fetch('GITHUB_ACCESS_TOKEN'),
-          environment.fetch('GITHUB_ORGANIZATION')
+          environment.fetch('GITHUB_ORGANIZATION', nil)
         )
       end
 
       private
 
       def missing
-        ENVIRONMENT_VARIABLES.reject do |environment_variable|
+        REQUIRED_ENVIRONMENT_VARIABLES.reject do |environment_variable|
           environment.key?(environment_variable)
         end
       end

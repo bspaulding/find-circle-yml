@@ -12,7 +12,7 @@ module FindCircleYml
       end
 
       def repositories
-        client.organization_repositories(organization).map do |response|
+        fetch_repos.map do |response|
           Repository.new(
             response[:full_name],
             response[:default_branch],
@@ -34,6 +34,10 @@ module FindCircleYml
       def client
         Octokit.auto_paginate = true
         Octokit::Client.new(login: user, password: access_token)
+      end
+
+      def fetch_repos
+        organization ? client.organization_repositories(organization) : client.repositories
       end
     end
   end
